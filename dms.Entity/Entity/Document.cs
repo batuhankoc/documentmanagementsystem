@@ -24,5 +24,6 @@ namespace dms.Entity.Entity
 
         public ICollection<DocumentVersion> DocumentVersions { get; set; }
         public ICollection<DocumentTag> DocumentTags { get; set; }
+
     }
 }
