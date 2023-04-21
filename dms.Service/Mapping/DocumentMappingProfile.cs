@@ -1,10 +1,6 @@
-﻿using dms.Entity.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using dms.Contract.DocumentContracts;
+using dms.Entity.Entity;
 
 namespace dms.Service.Mapping
 {
@@ -12,8 +8,9 @@ namespace dms.Service.Mapping
     {
         public DocumentMappingProfile()
         {
-            
+            CreateMap<AddDocumentContract, Document>()
+                .ForMember(dest => dest.DocumentTags, opt => opt.Ignore())
+                .ForMember(dest => dest.UploadDate, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
-
     }
 }

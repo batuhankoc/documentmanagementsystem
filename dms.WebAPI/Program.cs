@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using dms.Entity.Abstract;
 using dms.Entity.Concrete;
 using dms.Entity.Entity;
@@ -5,6 +6,7 @@ using dms.Service.Abstract;
 using dms.Service.Concrete;
 using dms.Service.Mapping;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +20,10 @@ builder.Services.AddAutoMapper(typeof(DocumentMappingProfile));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("BlobStorageConnectionString")));
 builder.Services.AddTransient(typeof(IRepository<>), typeof(BaseRepository<>));
 builder.Services.AddTransient<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<BlobStorageService>();
 builder.Services.AddTransient<IDocumentService, DocumentService>();
 
 var app = builder.Build();
