@@ -32,14 +32,17 @@ namespace dms.Service.Concrete
             var document = _mapper.Map<Document>(contract);
 
             document.DocumentTags = new List<DocumentTag>();
-            foreach (var tagId in contract.TagIds)
-            {
-                document.DocumentTags.Add(new DocumentTag { DocumentId = document.Id, TagId = tagId });
-            }
+            if (contract.TagIds != null)
+                foreach (var tagId in contract.TagIds)
+                {
+                    document.DocumentTags.Add(new DocumentTag {DocumentId = document.Id, TagId = tagId});
+                }
 
             var fileUrl = await _blobStorageService.UploadFileAsync(contract.File);
             document.FilePath = fileUrl;
             var newDocument = await _documentRepository.AddAsync(document);
+
+            await _documentRepository.SaveChangesAsync();
 
             return ApiResponse<Document>.Success(newDocument);
         }

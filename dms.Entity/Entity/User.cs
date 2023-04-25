@@ -17,7 +17,6 @@ namespace dms.Entity.Entity
         public string Organization { get; set; }
 
         public ICollection<Document> Documents { get; set; }
-        public ICollection<Folder> Folders { get; set; }
         public ICollection<Tag> Tags { get; set; }
     }
 }

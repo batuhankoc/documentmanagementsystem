@@ -9,10 +9,16 @@ using dms.Entity.Entity;
 
 namespace dms.Entity.Concrete
 {
+
     public class DocumentRepository : BaseRepository<Document>, IDocumentRepository
     {
-        public DocumentRepository(DbContext context) : base(context)
+        private readonly DataContext _context;
+
+        public DocumentRepository(DataContext context) : base(context)
         {
+            _context = context;
         }
+
+        // Eğer Document'a özgü ekstra repository metotları olacaksa, buraya ekleyebilirsiniz.
     }
 }

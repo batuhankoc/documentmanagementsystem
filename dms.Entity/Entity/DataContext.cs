@@ -9,7 +9,6 @@ namespace dms.Entity.Entity
         public DbSet<User> Users { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentVersion> DocumentVersions { get; set; }
-        public DbSet<Folder> Folders { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<DocumentTag> DocumentTags { get; set; }
 

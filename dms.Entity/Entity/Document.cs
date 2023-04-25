@@ -17,8 +17,6 @@ namespace dms.Entity.Entity
         public int VersionNumber { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
-        public int? FolderId { get; set; }
-        public Folder Folder { get; set; }
         public ICollection<DocumentVersion> DocumentVersions { get; set; }
         public ICollection<DocumentTag> DocumentTags { get; set; }
 
