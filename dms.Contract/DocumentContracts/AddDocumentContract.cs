@@ -15,7 +15,6 @@ namespace dms.Contract.DocumentContracts
         public long FileSize { get; set; }
         public string FilePath { get; set; }
         public string UserId { get; set; }
-        public int? FolderId { get; set; }
         public int VersionNumber { get; set; }
         public List<int>? TagIds { get; set; }
         public IFormFile File { get; set; }

@@ -23,7 +23,7 @@ namespace dms.Service.Concrete
 
         public async Task<string> UploadFileAsync(IFormFile file)
         {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_configuration.GetValue<string>("BlobStorageContainerName"));
+            var containerClient = _blobServiceClient.GetBlobContainerClient(_configuration.GetSection("BlobStorageContainerName").Value);
             await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var blobClient = containerClient.GetBlobClient(file.FileName);
