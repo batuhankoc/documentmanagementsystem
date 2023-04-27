@@ -10,7 +10,7 @@ namespace dms.Service.Mapping
         {
             CreateMap<AddDocumentContract, Document>()
                 .ForMember(dest => dest.DocumentTags, opt => opt.Ignore())
-                .ForMember(dest => dest.UploadDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+                .ForMember(dest => dest.UploadDate, opt => opt.MapFrom(src => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)));
         }
     }
 }

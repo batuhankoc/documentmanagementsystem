@@ -10,21 +10,24 @@ using AutoMapper;
 using dms.Contract.DocumentContracts;
 using dms.Contract.ResponseContracts;
 using Microsoft.EntityFrameworkCore;
+using dms.Entity.Concrete;
 
 namespace dms.Service.Concrete
 {
     public class DocumentService : BaseService<Document>, IDocumentService
     {
         private readonly IDocumentRepository _documentRepository;
+        private readonly ITagRepository _tagRepository;
         private readonly IMapper _mapper;
         private readonly BlobStorageService _blobStorageService;
 
 
-        public DocumentService(IDocumentRepository documentRepository, IMapper mapper, BlobStorageService blobStorageService) : base(documentRepository)
+        public DocumentService(IDocumentRepository documentRepository, IMapper mapper, BlobStorageService blobStorageService, ITagRepository tagRepository) : base(documentRepository)
         {
             _documentRepository = documentRepository;
             _mapper = mapper;
             _blobStorageService = blobStorageService;
+            _tagRepository = tagRepository;
         }
 
         public async Task<ApiResponse<Document>> AddDocumentAsync(AddDocumentContract contract)
@@ -32,20 +35,38 @@ namespace dms.Service.Concrete
             var document = _mapper.Map<Document>(contract);
 
             document.DocumentTags = new List<DocumentTag>();
-            if (contract.TagIds != null)
-                foreach (var tagId in contract.TagIds)
-                {
-                    document.DocumentTags.Add(new DocumentTag {DocumentId = document.Id, TagId = tagId});
-                }
-
+            var errorMessage = await AddTagsToDocumentAsync(contract, document);
+            if (errorMessage != null)
+                return ApiResponse<Document>.Error(errorMessage);
+            
             var fileUrl = await _blobStorageService.UploadFileAsync(contract.File);
-            document.FilePath = fileUrl;
-            var newDocument = await _documentRepository.AddAsync(document);
+            document.FileUrl = fileUrl;
+            document.FileType = contract.File.ContentType;
+            document.FileSize = (int)contract.File.Length;
 
-            await _documentRepository.SaveChangesAsync();
+            var newDocument = await _documentRepository.AddAsync(document);
 
             return ApiResponse<Document>.Success(newDocument);
         }
 
+        #region Privates
+        private async Task<string?> AddTagsToDocumentAsync(AddDocumentContract contract, Document document)
+        {
+            if (contract.TagIds == null) return null;
+            var existingTags = await _tagRepository.GetByIdsAsync(contract.TagIds);
+            var existingTagIds = existingTags.Select(tag => tag.Id).ToHashSet();
+
+            if (existingTagIds.Count != contract.TagIds.Count)
+            {
+                var notFoundTagIds = contract.TagIds.Except(existingTagIds).ToList();
+                var notFoundTagIdsString = string.Join(", ", notFoundTagIds);
+                return $"The following tags were not found in the database: {notFoundTagIdsString}";
+            }
+
+            document.DocumentTags = existingTags.Select(tag => new DocumentTag { DocumentId = document.Id, TagId = tag.Id }).ToList();
+
+            return null;
+        }
+        #endregion
     }
 }
