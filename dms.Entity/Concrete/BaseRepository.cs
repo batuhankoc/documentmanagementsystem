@@ -16,7 +16,7 @@ namespace dms.Entity.Concrete
         public BaseRepository(DbContext context)
         {
             _context = context;
-            _dbSet = context.Set<T>();
+            _dbSet = _context.Set<T>();
         }
 
         public async Task<T> GetByIdAsync(int id)
@@ -31,6 +31,7 @@ namespace dms.Entity.Concrete
         public async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
+            await SaveChangesAsync();
             return entity;
         }
 
